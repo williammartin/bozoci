@@ -44,7 +44,7 @@ func (p *Provider) Provide(imageID string, imageURL *url.URL) (string, error) {
 			return "", err
 		}
 
-		tarCmd := exec.Command("tar", "-p", "-x", "-C", imageDir)
+		tarCmd := exec.Command("tar", "-z", "-p", "-x", "-C", imageDir)
 		tarCmd.Stdin = blobStream
 		if err := tarCmd.Run(); err != nil {
 			return "", err

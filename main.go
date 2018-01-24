@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/urfave/cli"
+	"github.com/williammartin/bozoci/container"
 	"github.com/williammartin/bozoci/image"
 )
 
@@ -14,6 +15,7 @@ func main() {
 	bozoci.Name = "bozoci"
 	bozoci.Commands = []cli.Command{
 		CreateImageCommand,
+		RunCommand,
 	}
 
 	if err := bozoci.Run(os.Args); err != nil {
@@ -48,6 +50,34 @@ var CreateImageCommand = cli.Command{
 		}
 
 		fmt.Println(rootfs)
+		return nil
+	},
+}
+
+var RunCommand = cli.Command{
+	Name: "run",
+	Flags: []cli.Flag{
+		cli.StringFlag{
+			Name: "containers-dir, d",
+		},
+		cli.StringFlag{
+			Name: "rootfs, r",
+		},
+		cli.StringFlag{
+			Name: "command, c",
+		},
+	},
+	Action: func(ctx *cli.Context) error {
+		provider := &container.Provider{
+			ContainersDir: ctx.String("containers-dir"),
+		}
+
+		err := provider.Provide(ctx.Args().First(), ctx.String("rootfs"), ctx.String("command"))
+		if err != nil {
+			return err
+		}
+
+		fmt.Println(ctx.Args().First())
 		return nil
 	},
 }
